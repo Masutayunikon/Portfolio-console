@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh pr:*)",
+      "Bash(where gh:*)",
+      "Bash(winget list:*)",
+      "Bash(powershell -Command \"git -C ''C:\\\\Users\\\\yunik\\\\WebstormProjects\\\\Portfolio-console\\\\.claude\\\\worktrees\\\\wizardly-cohen'' config --get remote.origin.url\")",
+      "Bash(powershell -NoProfile -Command \"Invoke-RestMethod -Uri ''https://api.github.com/repos/Masutayunikon/Portfolio-console/branches'' | ConvertTo-Json\")",
+      "Bash(npm install:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(where node:*)",
+      "Bash(where npm:*)",
+      "Bash(powershell -Command \"Get-Command npm | Select-Object -ExpandProperty Source\")",
+      "Bash(\"C:\\\\Users\\\\yunik\\\\WebstormProjects\\\\Portfolio-console\\\\.claude\\\\worktrees\\\\wizardly-cohen\\\\Dockerfile\":*)"
+    ]
+  }
+}
