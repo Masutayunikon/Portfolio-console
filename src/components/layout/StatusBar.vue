@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useTabs } from '@/composables/useTabs.js'
 import { useSpotify } from '@/composables/useSpotify.js'
 
-const emit = defineEmits(['toggle-spotify'])
+const emit = defineEmits(['toggle-spotify', 'toggle-terminal'])
 
 const { tabs, activeTabId } = useTabs()
 const { track, isPlaying, error: spotifyError, hasCredentials, startPolling } = useSpotify()
@@ -44,11 +44,16 @@ const spotifyLabel = computed(() => {
         main
       </span>
       <span class="status-item">{{ activeFile }}</span>
+      <span
+        class="status-item terminal-toggle"
+        title="Toggle terminal (Ctrl+`)"
+        @click="$emit('toggle-terminal')"
+      >⌨ TERMINAL</span>
     </div>
 
     <!-- Right -->
     <div class="status-right">
-      <span class="status-item">{{ timeStr }}</span>
+      <span class="status-item time">{{ timeStr }}</span>
       <span
         v-if="spotifyLabel"
         class="status-item spotify-item"
@@ -98,10 +103,17 @@ const spotifyLabel = computed(() => {
 .status-item:hover { background: rgba(255,255,255,0.1); }
 
 .branch { gap: 5px; }
+.terminal-toggle { cursor: pointer; font-size: 11px; opacity: 0.8; }
+.terminal-toggle:hover { opacity: 1; }
 
-.spotify-item { cursor: pointer; max-width: 320px; overflow: hidden; text-overflow: ellipsis; }
-
+.spotify-item { cursor: pointer; max-width: 280px; overflow: hidden; text-overflow: ellipsis; }
 .spotify-icon { font-size: 11px; }
+
+/* Hide some items on mobile */
+@media (max-width: 768px) {
+  .time, .lang, .encoding { display: none; }
+  .spotify-item { max-width: 160px; }
+}
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }

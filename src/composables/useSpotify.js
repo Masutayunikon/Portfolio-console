@@ -1,11 +1,12 @@
-import { ref, onUnmounted } from 'vue'
+import { ref } from 'vue'
 
 // ⚠️ WARNING: The client_secret is exposed in the client bundle.
 // In production, replace this with a Vercel/Netlify Edge Function
 // that handles the token refresh server-side.
-const CLIENT_ID     = import.meta.env.VITE_SPOTIFY_CLIENT_ID
-const CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET
-const REFRESH_TOKEN = import.meta.env.VITE_SPOTIFY_REFRESH_TOKEN
+const env           = window.__env__ ?? {}
+const CLIENT_ID     = env.VITE_SPOTIFY_CLIENT_ID     || import.meta.env.VITE_SPOTIFY_CLIENT_ID
+const CLIENT_SECRET = env.VITE_SPOTIFY_CLIENT_SECRET || import.meta.env.VITE_SPOTIFY_CLIENT_SECRET
+const REFRESH_TOKEN = env.VITE_SPOTIFY_REFRESH_TOKEN || import.meta.env.VITE_SPOTIFY_REFRESH_TOKEN
 
 const track     = ref(null)
 const isPlaying = ref(false)
@@ -85,15 +86,20 @@ export function useSpotify() {
     }
   }
 
+  // Polling is managed at module level — not tied to any single component lifecycle
   function startPolling() {
-    if (!hasCredentials) return
+    if (!hasCredentials || pollInterval) return  // already running
     fetchNowPlaying()
-    pollInterval = setInterval(fetchNowPlaying, 30000)
+    pollInterval = setInterval(fetchNowPlaying, 10000)
 
-    // Smooth progress ticker
+    // Smooth progress ticker — triggers immediate fetch when song ends
     progressTimer = setInterval(() => {
       if (isPlaying.value && progress.value < duration.value) {
         progress.value += 1000
+        // Song ending in < 2s — fetch next track immediately
+        if (duration.value > 0 && progress.value >= duration.value - 2000) {
+          setTimeout(fetchNowPlaying, 2000)
+        }
       }
     }, 1000)
   }
@@ -101,9 +107,9 @@ export function useSpotify() {
   function stopPolling() {
     clearInterval(pollInterval)
     clearInterval(progressTimer)
+    pollInterval = null
+    progressTimer = null
   }
-
-  onUnmounted(stopPolling)
 
   return {
     track, isPlaying, progress, duration, error,

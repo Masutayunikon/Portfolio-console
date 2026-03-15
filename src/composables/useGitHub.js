@@ -1,7 +1,8 @@
 import { ref } from 'vue'
 
-const TOKEN    = import.meta.env.VITE_GITHUB_TOKEN
-const USERNAME = import.meta.env.VITE_GITHUB_USERNAME || 'Masutayunikon'
+const env      = window.__env__ ?? {}
+const TOKEN    = env.VITE_GITHUB_TOKEN    || import.meta.env.VITE_GITHUB_TOKEN
+const USERNAME = env.VITE_GITHUB_USERNAME || import.meta.env.VITE_GITHUB_USERNAME || 'Masutayunikon'
 const BASE     = 'https://api.github.com'
 
 const headers = TOKEN
@@ -53,7 +54,22 @@ export function useGitHub() {
       )
       if (!res.ok) return null
       const data = await res.json()
-      return atob(data.content.replace(/\n/g, ''))
+
+      // Proper UTF-8 decode (atob breaks on non-ASCII characters)
+      const binary = atob(data.content.replace(/\n/g, ''))
+      const bytes  = Uint8Array.from(binary, c => c.charCodeAt(0))
+      let markdown = new TextDecoder('utf-8').decode(bytes)
+
+      // Rewrite relative image URLs to raw.githubusercontent.com
+      const branch = data.url?.includes('/git/blobs/') ? 'HEAD' : (data.html_url?.match(/blob\/([^/]+)\//)?.[1] ?? 'main')
+      const rawBase = `https://raw.githubusercontent.com/${USERNAME}/${repoName}/${branch}`
+
+      markdown = markdown.replace(
+        /!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g,
+        (_, alt, src) => `![${alt}](${rawBase}/${src.replace(/^\.\//, '')})`
+      )
+
+      return markdown
     } catch {
       return null
     }

@@ -28,6 +28,7 @@ function langColor(lang) {
 const staticFiles = [
   { id: 'home',        label: 'README.md',      route: '/',           icon: 'md'  },
   { id: 'about',       label: 'about.vue',       route: '/about',      icon: 'vue' },
+  { id: 'stats',       label: 'stats.vue',       route: '/stats',      icon: 'vue' },
   { id: 'experience',  label: 'experience.vue',  route: '/experience', icon: 'vue' },
   { id: 'projects',    label: 'projects.vue',    route: '/projects',   icon: 'vue' },
   { id: 'skills',      label: 'skills.vue',      route: '/skills',     icon: 'vue' },
