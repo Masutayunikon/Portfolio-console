@@ -1,0 +1,85 @@
+/* ─── Tokyo Night — CSS Variables ──────────────────────────────── */
+:root {
+  --bg-editor:       #1a1b2e;
+  --bg-sidebar:      #16161f;
+  --bg-activity:     #12121a;
+  --bg-tab-active:   #1a1b2e;
+  --bg-tab-inactive: #13131a;
+  --bg-hover:        #1f2035;
+  --bg-selection:    #2a2b4a;
+  --status-bar:      #7c3aed;
+  --status-bar-text: #ffffff;
+  --title-bar:       #0f0f17;
+  --border:          #2a2b3e;
+  --text-main:       #c0caf5;
+  --text-dim:        #6b7db3;
+  --text-comment:    #565f89;
+  --text-keyword:    #bb9af7;
+  --text-string:     #9ece6a;
+  --text-function:   #7dcfff;
+  --text-number:     #ff9e64;
+  --text-type:       #2ac3de;
+  --text-operator:   #89ddff;
+  --text-error:      #f7768e;
+  --text-warning:    #e0af68;
+  --scrollbar-thumb: #2a2b3e;
+  --scrollbar-track: transparent;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --font-size: 13px;
+  --line-height: 1.6;
+  --sidebar-width: 240px;
+  --activity-width: 48px;
+  --tab-height: 35px;
+  --status-height: 22px;
+  --title-height: 30px;
+}
+
+/* ─── Reset ─────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #app {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-mono);
+  font-size: var(--font-size);
+  background: var(--bg-editor);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: #3a3b5e; }
+
+/* ─── Utility ────────────────────────────────────────────────────── */
+a { color: var(--text-function); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.token-keyword  { color: var(--text-keyword); }
+.token-string   { color: var(--text-string); }
+.token-function { color: var(--text-function); }
+.token-number   { color: var(--text-number); }
+.token-comment  { color: var(--text-comment); font-style: italic; }
+.token-type     { color: var(--text-type); }
+.token-operator { color: var(--text-operator); }
+
+/* ─── View transitions ───────────────────────────────────────────── */
+.fade-enter-active,
+.fade-leave-active { transition: opacity 0.15s ease; }
+.fade-enter-from,
+.fade-leave-to { opacity: 0; }
