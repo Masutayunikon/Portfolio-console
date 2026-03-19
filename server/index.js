@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 3000
 
 const GITHUB_TOKEN    = process.env.VITE_GITHUB_TOKEN
 const GITHUB_USERNAME = process.env.VITE_GITHUB_USERNAME || 'Masutayunikon'
+const BLOG_REPO       = process.env.VITE_BLOG_REPO       || 'Portfolio-console'
 
 const SPOTIFY_CLIENT_ID     = process.env.VITE_SPOTIFY_CLIENT_ID
 const SPOTIFY_CLIENT_SECRET = process.env.VITE_SPOTIFY_CLIENT_SECRET
@@ -78,6 +79,107 @@ app.get('/api/github/readme/:repo', async (req, res) => {
     )
 
     res.json({ markdown })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+// ── Blog routes ──────────────────────────────────────────────────────
+function parseFrontmatter(raw) {
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/)
+  if (!match) return { frontmatter: {}, content: raw }
+  const frontmatter = {}
+  match[1].split('\n').forEach(line => {
+    const colon = line.indexOf(':')
+    if (colon > 0) {
+      const key = line.slice(0, colon).trim()
+      const val = line.slice(colon + 1).trim().replace(/^["']|["']$/g, '')
+      frontmatter[key] = val
+    }
+  })
+  return { frontmatter, content: match[2] }
+}
+
+function slugToTitle(slug) {
+  return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+}
+
+function decodeGithubContent(b64) {
+  const binary = atob(b64.replace(/\n/g, ''))
+  const bytes  = Uint8Array.from(binary, c => c.charCodeAt(0))
+  return new TextDecoder('utf-8').decode(bytes)
+}
+
+app.get('/api/blog/posts', async (req, res) => {
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${GITHUB_USERNAME}/${BLOG_REPO}/contents/blog`,
+      { headers: githubHeaders }
+    )
+    if (!r.ok) return res.status(r.status).json({ error: 'Blog folder not found' })
+    const files = await r.json()
+
+    // Fetch each file in parallel to extract frontmatter title/date
+    const posts = await Promise.all(
+      files
+        .filter(f => f.type === 'file' && f.name.endsWith('.md'))
+        .map(async f => {
+          const slug = f.name.replace('.md', '')
+          try {
+            const fr = await fetch(f.download_url)
+            const raw = await fr.text()
+            const { frontmatter } = parseFrontmatter(raw)
+            return {
+              slug,
+              title:       frontmatter.title       || slugToTitle(slug),
+              date:        frontmatter.date         || null,
+              description: frontmatter.description  || '',
+              tags:        frontmatter.tags
+                ? frontmatter.tags.replace(/[\[\]]/g, '').split(',').map(t => t.trim()).filter(Boolean)
+                : []
+            }
+          } catch {
+            return { slug, title: slugToTitle(slug), date: null, description: '', tags: [] }
+          }
+        })
+    )
+
+    // Sort by date descending (nulls last)
+    posts.sort((a, b) => {
+      if (!a.date && !b.date) return 0
+      if (!a.date) return 1
+      if (!b.date) return -1
+      return new Date(b.date) - new Date(a.date)
+    })
+
+    res.json(posts)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+app.get('/api/blog/post/:slug', async (req, res) => {
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${GITHUB_USERNAME}/${BLOG_REPO}/contents/blog/${req.params.slug}.md`,
+      { headers: githubHeaders }
+    )
+    if (!r.ok) return res.status(r.status).json({ error: 'Post not found' })
+    const data = await r.json()
+
+    const raw = decodeGithubContent(data.content)
+    const { frontmatter, content } = parseFrontmatter(raw)
+
+    res.json({
+      slug:        req.params.slug,
+      title:       frontmatter.title       || slugToTitle(req.params.slug),
+      date:        frontmatter.date         || null,
+      description: frontmatter.description  || '',
+      tags:        frontmatter.tags
+        ? frontmatter.tags.replace(/[\[\]]/g, '').split(',').map(t => t.trim()).filter(Boolean)
+        : [],
+      markdown: content
+    })
   } catch (e) {
     res.status(500).json({ error: e.message })
   }

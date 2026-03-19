@@ -22,7 +22,12 @@ const props = defineProps({
       </button>
 
       <!-- Search -->
-      <button class="icon-btn" title="Search (décoratif)">
+      <button
+        class="icon-btn"
+        :class="{ active: activePanel === 'search' }"
+        title="Recherche"
+        @click="$emit('toggle-sidebar', 'search')"
+      >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <circle cx="11" cy="11" r="7"/>
           <path d="M21 21l-4.35-4.35"/>
@@ -44,13 +49,16 @@ const props = defineProps({
         </svg>
       </button>
 
-      <!-- Extensions -->
-      <button class="icon-btn" title="Extensions (décoratif)">
+      <!-- Blog (Extensions slot) -->
+      <button
+        class="icon-btn"
+        :class="{ active: activePanel === 'blog' }"
+        title="Blog"
+        @click="$emit('toggle-sidebar', 'blog')"
+      >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="3"  y="3"  width="7" height="7" rx="1"/>
-          <rect x="14" y="3"  width="7" height="7" rx="1"/>
-          <rect x="3"  y="14" width="7" height="7" rx="1"/>
-          <path d="M14 17.5h3m0 0V14m0 3.5V21"/>
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
         </svg>
       </button>
     </div>

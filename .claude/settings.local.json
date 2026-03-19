@@ -11,7 +11,9 @@
       "Bash(where node:*)",
       "Bash(where npm:*)",
       "Bash(powershell -Command \"Get-Command npm | Select-Object -ExpandProperty Source\")",
-      "Bash(\"C:\\\\Users\\\\yunik\\\\WebstormProjects\\\\Portfolio-console\\\\.claude\\\\worktrees\\\\wizardly-cohen\\\\Dockerfile\":*)"
+      "Bash(\"C:\\\\Users\\\\yunik\\\\WebstormProjects\\\\Portfolio-console\\\\.claude\\\\worktrees\\\\wizardly-cohen\\\\Dockerfile\":*)",
+      "Bash(curl -s http://localhost:3000/api/spotify/now-playing)",
+      "Bash(node -e \"const fs=require\\(''fs''\\); fs.writeFileSync\\(''src/components/layout/Sidebar.vue'', fs.readFileSync\\(''src/components/layout/Sidebar.vue''\\)\\)\")"
     ]
   }
 }
