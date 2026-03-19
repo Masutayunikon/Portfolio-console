@@ -1,4 +1,4 @@
-# ── Stage 1: Build ──────────────────────────────────────────────
+# ── Stage 1: Build ──────────────────────────────────────────────────
 FROM node:20-alpine AS builder
 
 WORKDIR /app
@@ -7,23 +7,18 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# ── Stage 2: Serve ───────────────────────────────────────────────
-FROM nginx:alpine
+# ── Stage 2: Serve ──────────────────────────────────────────────────
+# Express handles both the API proxy (GitHub + Spotify) and static files.
+# Secrets are injected at runtime via env vars — nothing is baked into the image.
+FROM node:20-alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
 
-RUN echo 'server { \
-  listen 80; \
-  root /usr/share/nginx/html; \
-  index index.html; \
-  location /env-config.js { add_header Cache-Control "no-store"; } \
-  location / { try_files $uri $uri/ /index.html; } \
-  gzip on; \
-  gzip_types text/plain text/css application/json application/javascript text/xml; \
-}' > /etc/nginx/conf.d/default.conf
+COPY server/ ./server/
+COPY --from=builder /app/dist ./dist
 
-EXPOSE 80
+EXPOSE 3000
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["node", "server/index.js"]

@@ -56,5 +56,5 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # No build-args — env vars are injected at runtime via docker-entrypoint.sh
-          # Pass them through your Runtipi app config instead
+          # No build-args — env vars are injected at runtime via Runtipi / docker run -e
+          # The Express server reads process.env.* so secrets never touch the browser

@@ -11,7 +11,23 @@
       "Bash(where node:*)",
       "Bash(where npm:*)",
       "Bash(powershell -Command \"Get-Command npm | Select-Object -ExpandProperty Source\")",
-      "Bash(\"C:\\\\Users\\\\yunik\\\\WebstormProjects\\\\Portfolio-console\\\\.claude\\\\worktrees\\\\wizardly-cohen\\\\Dockerfile\":*)"
+      "Bash(\"C:\\\\Users\\\\yunik\\\\WebstormProjects\\\\Portfolio-console\\\\.claude\\\\worktrees\\\\wizardly-cohen\\\\Dockerfile\":*)",
+      "Bash(curl -s http://localhost:3000/api/spotify/now-playing)",
+      "Bash(node -e \"const fs=require\\(''fs''\\); fs.writeFileSync\\(''src/components/layout/Sidebar.vue'', fs.readFileSync\\(''src/components/layout/Sidebar.vue''\\)\\)\")",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":3000\")",
+      "Bash(findstr LISTENING)",
+      "Bash(taskkill /PID 9848 /F)",
+      "Bash(cmd /c \"taskkill /PID 9848 /F\")",
+      "Bash(cmd /c \"taskkill /PID 9848 /F 2>&1\")",
+      "Bash(node server/index.js)",
+      "Bash(cmd /c \"FOR /F \"\"tokens=5\"\" %a IN \\(''netstat -aon ^| findstr :3000 ^| findstr LISTENING''\\) DO taskkill /F /PID %a\")",
+      "Bash(cmd /c \"netstat -ano | findstr :3000 | findstr LISTENING\")",
+      "Bash(cmd /c \"taskkill /F /PID 9848\")",
+      "Bash(cmd /c \"taskkill /F /PID 9848 && echo killed\")",
+      "Bash(powershell -Command \"Stop-Process -Id 9848 -Force; Write-Host ''done''\")",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -State Listen | Select-Object -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_-Force }; Write-Host ''killed''\")",
+      "Bash(powershell -Command \"$pid3000 = \\(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue\\).OwningProcess; if \\($pid3000\\) { Stop-Process -Id $pid3000 -Force; Write-Host \"\"Killed $pid3000\"\" } else { Write-Host ''Port already free'' }\")"
     ]
   }
 }

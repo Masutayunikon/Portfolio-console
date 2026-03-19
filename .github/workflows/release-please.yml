@@ -5,6 +5,7 @@ on:
     branches:
       - main
 
+# GITHUB_TOKEN needs these permissions to open PRs and create releases
 permissions:
   contents: write
   pull-requests: write
@@ -14,10 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
+      tag_name:        ${{ steps.release.outputs.tag_name }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
+          # Use a PAT (RELEASE_PLEASE_TOKEN) if you want release-please to
+          # auto-merge its own PRs and trigger downstream workflows.
+          # Otherwise the built-in GITHUB_TOKEN (granted above) is enough.
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
           release-type: node
