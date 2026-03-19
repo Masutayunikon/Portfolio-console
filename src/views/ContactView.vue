@@ -50,11 +50,6 @@ async function submit() {
       <a href="https://github.com/Masutayunikon" target="_blank" rel="noopener" class="token-string link">"@Masutayunikon"</a><span class="token-operator">,</span>
       <span class="comment">&nbsp;// lien GitHub</span>
     </div>
-    <div class="line indent">
-      <span class="token-string">twitter</span><span class="token-operator">:</span>
-      <a href="https://x.com/Masutayunikon" target="_blank" rel="noopener" class="token-string link">"@Masutayunikon"</a><span class="token-operator">,</span>
-      <span class="comment">&nbsp;// lien Twitter/X</span>
-    </div>
     <div class="line"><span class="token-operator">}</span></div>
 
     <div class="spacer" />
