@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
+import nodemailer from 'nodemailer'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -215,6 +216,44 @@ app.get('/api/spotify/now-playing', async (req, res) => {
     })
   } catch (e) {
     res.status(500).json({ error: e.message })
+  }
+})
+
+// ── Contact route ────────────────────────────────────────────────────
+const smtpTransport = (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)
+  ? nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT) || 587,
+      secure: Number(process.env.SMTP_PORT) === 465,
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+    })
+  : null
+
+app.post('/api/contact', express.json(), async (req, res) => {
+  const { name, email, message } = req.body ?? {}
+
+  if (!name?.trim() || !email?.trim() || !message?.trim()) {
+    return res.status(400).json({ error: 'Tous les champs sont requis.' })
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: 'Adresse email invalide.' })
+  }
+  if (!smtpTransport) {
+    return res.status(503).json({ error: 'Service email non configuré.' })
+  }
+
+  try {
+    await smtpTransport.sendMail({
+      from:    `"${name}" <${process.env.SMTP_USER}>`,
+      replyTo: email,
+      to:      process.env.SMTP_TO || process.env.SMTP_USER,
+      subject: `[Portfolio] Message de ${name}`,
+      text:    `De : ${name} <${email}>\n\n${message}`,
+      html:    `<p><strong>De :</strong> ${name} &lt;${email}&gt;</p><p>${message.replace(/\n/g, '<br>')}</p>`
+    })
+    res.json({ success: true })
+  } catch (e) {
+    res.status(500).json({ error: 'Erreur lors de l\'envoi. Réessayez plus tard.' })
   }
 })
 
